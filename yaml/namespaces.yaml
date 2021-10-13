@@ -1,0 +1,16 @@
+# kubectl apply -f namespaces.yaml
+# namespace web
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: web
+  labels:
+    name: web
+---
+# namespace api
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: api
+  labels:
+    name: api
