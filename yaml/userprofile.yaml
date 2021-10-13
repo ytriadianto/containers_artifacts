@@ -1,0 +1,51 @@
+#deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userprofile-deployment
+  labels:
+    app: userprofile
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: userprofile
+  template:
+    metadata:
+      labels:
+        app: userprofile
+    spec:
+        containers:
+            - image: registryscg1665.azurecr.io/tripinsights/userprofile:1.0
+              name: userprofile
+              env:
+                - name: "ASPNETCORE_ENVIRONMENT"
+                  value: "Production"
+                - name: "SQL_SERVER"
+                  value: "sqlserverscg1665.database.windows.net"
+                - name: "SQL_USER"
+                  value: "sqladminsCg1665"
+                - name: "SQL_DBNAME"
+                  value: "mydrivingDB"
+                - name: "SQL_PASSWORD"
+                  valueFrom:
+                    secretKeyRef:
+                      name: sql-password
+                      key: password
+              ports:
+                - containerPort: 80 # This container exposes port 80
+            
+---
+#service deployment into kubes
+apiVersion: v1
+kind: Service
+metadata:
+  name: userprofile-service
+spec:
+  selector:
+    app: userprofile
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80            
+
