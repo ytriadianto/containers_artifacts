@@ -1,0 +1,39 @@
+# deployment - defines what pods are and how many we want
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tripviewer-deployment
+spec:
+  selector:
+    matchLabels:
+      app: tripviewer
+  template: # This is the template of the pod inside the deployment
+    metadata:
+      labels:
+        app: tripviewer
+    spec:
+      containers: # Here we define all containers
+        - image: "registryscg1665.azurecr.io/tripinsights/tripviewer:1.0"
+          name: tripviewer
+          env:
+          - name: USERPROFILE_API_ENDPOINT
+            value: "http://userprofile-service"
+          - name: TRIPS_API_ENDPOINT
+            value: "http://trips-service"
+          ports:
+            - containerPort: 80 # This container exposes port 80
+              name: http
+---
+# service - how poi pods are going to be reachable
+apiVersion: v1
+kind: Service
+metadata:
+  name: tripviewer-service
+spec:
+  selector:
+    app: tripviewer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
