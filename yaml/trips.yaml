@@ -1,0 +1,47 @@
+#deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trips-deployment
+spec:
+  selector:
+    matchLabels:
+      app: trips
+  template:
+    metadata:
+      labels:
+        app: trips
+    spec:
+      containers:
+        - image: "registryscg1665.azurecr.io/tripinsights/trips:1.0"
+          name: trips
+          env:
+          - name: SQL_USER
+            value: "sqladminsCg1665"
+          - name: SQL_SERVER
+            value: "sqlserverscg1665.database.windows.net"
+          - name: SQL_DBNAME
+            value: "mydrivingDB"
+          - name: WEB_PORT
+            value: "80"
+          - name: SQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                  name: sql-password
+                  key: password
+          ports:
+          - containerPort: 80
+            name: http
+---
+#service
+apiVersion: v1
+kind: Service
+metadata:
+  name: trips-service
+spec:
+  selector:
+    app: trips
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

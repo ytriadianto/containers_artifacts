@@ -1,0 +1,47 @@
+# deployment - defines what pods are and how many we want
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-java-deployment
+spec:
+  selector:
+    matchLabels:
+      app: user-java
+  template: # This is the template of the pod inside the deployment
+    metadata:
+      labels:
+        app: user-java
+    spec:
+      containers: # Here we define all containers
+        - image: "registryscg1665.azurecr.io/tripinsights/user-java:1.0"
+          name: user-java
+          env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: "Production"
+          - name: SQL_USER
+            value: "sqladminsCg1665"
+          - name: SQL_SERVER
+            value: "sqlserverscg1665.database.windows.net"
+          - name: SQL_DBNAME
+            value: "mydrivingDB"
+          - name: SQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sql-password
+                key: password
+          ports:
+            - containerPort: 80 # This container exposes port 80
+              name: http
+---
+# service - how poi pods are going to be reachable
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-java-service
+spec:
+  selector:
+    app: user-java
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
