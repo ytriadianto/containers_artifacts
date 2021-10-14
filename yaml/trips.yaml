@@ -26,14 +26,20 @@ spec:
             value: "mydrivingDB"
           - name: WEB_PORT
             value: "80"
-          - name: SQL_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                  name: sql-password
-                  key: password
           ports:
           - containerPort: 80
             name: http
+          volumeMounts:
+          - name: secrets-store-inline
+            mountPath: "/secrets"
+            readOnly: true
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "tripviewer-keyvault"
 ---
 #service
 apiVersion: v1
