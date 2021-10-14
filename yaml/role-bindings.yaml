@@ -1,0 +1,70 @@
+# kubectl apply -f role-bindings.yaml
+
+# API Dev AD group: 70972d3c-9005-4f25-b9a7-20642d36fab5
+# Web Dev AD group: 08c0af25-f3e7-4585-8e2e-ea867a500017
+
+# bindings are in the same namespace as their roles
+# subject are in the same namespace as their bindings
+
+# API Devs are in api-admin role
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: api-dev-is-api-admin
+  namespace: api
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: api-admin
+subjects:
+- kind: Group
+  namespace: api
+  name: "70972d3c-9005-4f25-b9a7-20642d36fab5"
+---
+
+# API Devs are in web-reader role
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: api-dev-is-web-reader
+  namespace: web
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: web-reader
+subjects:
+- kind: Group
+  namespace: web
+  name: "70972d3c-9005-4f25-b9a7-20642d36fab5"
+---
+
+# Web Devs are in web-admin role
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: web-dev-is-web-admin
+  namespace: web
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: web-admin
+subjects:
+- kind: Group
+  namespace: web
+  name: "08c0af25-f3e7-4585-8e2e-ea867a500017"
+---
+
+# API Devs are in api-reader role
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: web-dev-is-api-reader
+  namespace: api
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: api-reader
+subjects:
+- kind: Group
+  namespace: api
+  name: "08c0af25-f3e7-4585-8e2e-ea867a500017"
